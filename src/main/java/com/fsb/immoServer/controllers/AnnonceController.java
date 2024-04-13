@@ -1,19 +1,14 @@
 package com.fsb.immoServer.controllers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -147,7 +142,6 @@ public class AnnonceController {
         try {
             images = this.getByteImageList(annonce.getId());
 
-            // Add key-value pairs to the JSON object
             jsonObject.put("type", annonce.getType());
             jsonObject.put("categorieImmo", annonce.getCategorieImmo());
             jsonObject.put("titre", annonce.getTitre());
@@ -162,7 +156,6 @@ public class AnnonceController {
             jsonObject.put("dateCreation", annonce.getDateCreation());
             jsonObject.put("photos", images);
 
-            // System.out.println(jsonObject);
             return jsonObject;
 
         } catch (IOException e) {
