@@ -9,6 +9,7 @@ import java.util.zip.Inflater;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class ImageController {
-    private static final String FOLDER_PATH = "C:\\Users\\Amna\\Desktop\\ProjetWeb\\images\\";
+
+    public static String FOLDER_PATH = "C:\\Users\\Amna\\Desktop\\ProjetWeb\\images\\";
 
     public static String uploadImageToFileSystem(MultipartFile file, String annonceId) throws IOException {
         String imageName = annonceId + "_" + file.getOriginalFilename();
         String filePath = FOLDER_PATH + imageName;
 
+        System.err.println("============ filePath = " + filePath);
+
         try {
             file.transferTo(new File(filePath));
-            return filePath;
+            return imageName;
         } catch (Exception e) {
             return null;
         }
@@ -63,16 +67,15 @@ public class ImageController {
         System.out.println("path = " + path);
         try {
             byte[] imageBytes = Files.readAllBytes(new File(path).toPath());
-           return  ResponseEntity.status(HttpStatus.OK)
-				.contentType(MediaType.valueOf("image/png"))
-				.body(imageBytes);
-           // return ResponseEntity.ok().body(imageBytes);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("image/png"))
+                    .body(imageBytes);
+            // return ResponseEntity.ok().body(imageBytes);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(("Could not read the file: " + path).getBytes());
         }
     }
-
 
     public static byte[] compressImage(byte[] data) {
         Deflater deflater = new Deflater();
@@ -81,7 +84,7 @@ public class ImageController {
         deflater.finish();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] tmp = new byte[4*1024];
+        byte[] tmp = new byte[4 * 1024];
         while (!deflater.finished()) {
             int size = deflater.deflate(tmp);
             outputStream.write(tmp, 0, size);
@@ -93,13 +96,11 @@ public class ImageController {
         return outputStream.toByteArray();
     }
 
-
-
     public static byte[] decompressImage(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] tmp = new byte[4*1024];
+        byte[] tmp = new byte[4 * 1024];
         try {
             while (!inflater.finished()) {
                 int count = inflater.inflate(tmp);
@@ -110,6 +111,5 @@ public class ImageController {
         }
         return outputStream.toByteArray();
     }
-   
 
 }

@@ -20,10 +20,10 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${immobillier.app.jwtSecret}")
+    @Value("${immobilier.app.jwtSecret}")
     private String jwtSecret;
   
-    @Value("${immobillier.app.jwtExpirationMs}")
+    @Value("${immobilier.app.jwtExpirationMs}")
     private int jwtExpirationMs;
   
     public String generateJwtToken(Authentication authentication) {
