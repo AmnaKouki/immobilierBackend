@@ -89,7 +89,11 @@ public class AnnonceController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAnnonceByID(@PathVariable String id) {
         this.annonceRepository.deleteById(id);
-        return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
+        // return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
+        // return a json
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "Deleted successfully");
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
     public String uploadImageToFileSystem(MultipartFile file, String annonceId) throws IOException {
@@ -112,6 +116,7 @@ public class AnnonceController {
         if (this.annonceRepository.findById(id).isPresent()) {
             Annonce annonce = this.annonceRepository.findById(id).get();
             String imagePath = ImageController.uploadImageToFileSystem(file, id);
+
             List<String> newPhotoList = annonce.getPhotos();
             newPhotoList.addLast(imagePath);
 
@@ -195,6 +200,23 @@ public class AnnonceController {
         } catch (Exception e) {
             // handle exception
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // remove file from an
+    @DeleteMapping("/{id}/image/delete/{filename}")
+    public ResponseEntity<?> deleteImageFromAnnonce(@PathVariable String id, @PathVariable String filename) {
+        if (this.annonceRepository.findById(id).isPresent()) {
+            Annonce annonce = this.annonceRepository.findById(id).get();
+            List<String> newPhotoList = annonce.getPhotos();
+            newPhotoList.remove(filename);
+
+            annonce.setPhotos(newPhotoList);
+            this.annonceRepository.save(annonce);
+
+            return new ResponseEntity<>(annonce, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
